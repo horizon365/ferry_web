@@ -190,7 +190,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="角色" style="width: 90%">
+            <el-form-item label="角色" prop="roleId" style="width: 90%">
               <el-select v-model="form.roleId" placeholder="请选择" style="width: 100%" @change="$forceUpdate()">
                 <el-option
                   v-for="item in roleOptions"
@@ -347,6 +347,9 @@ export default {
         ],
         nickName: [
           { required: true, message: '用户昵称不能为空', trigger: 'blur' }
+        ],
+        roleId: [
+          { required: true, message: '用户角色为必选项', trigger: 'blur' }
         ],
         deptId: [
           { required: true, message: '归属部门不能为空', trigger: 'blur' }
