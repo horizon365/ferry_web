@@ -375,7 +375,7 @@ export const selectComponents = [
     label: '上传',
     tag: 'el-upload',
     tagIcon: 'upload',
-    action: 'https://jsonplaceholder.typicode.com/posts/',
+    action: 'http://jhkuajing.com:8001/api/v1/public/uploadFile',
     defaultValue: null,
     labelWidth: null,
     disabled: false,
