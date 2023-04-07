@@ -9,7 +9,7 @@
 
       <el-table v-loading="loading" border :data="ticketList" @selection-change="handleSelectionChange">
         <!-- <el-table-column type="selection" width="55" align="center" /> -->
-        <el-table-column label="ID" prop="id" width="120" />
+        <el-table-column label="ID" prop="id" width="60" />
         <el-table-column label="标题" prop="title" :show-overflow-tooltip="true" />
         <el-table-column label="流程" prop="process_name" :show-overflow-tooltip="true" />
         <el-table-column label="当前状态" :show-overflow-tooltip="true">
@@ -48,7 +48,7 @@
             <span>{{ parseTime(scope.row.create_time) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240">
           <template slot-scope="scope">
             <el-button
               v-permisaction="['process:list:myCreate:select']"
@@ -64,6 +64,13 @@
               icon="el-icon-refresh-right"
               @click="handleReopen(scope.row.id)"
             >重开</el-button>
+            <el-button
+              v-permisaction="['process:list:myCreate:delete']"
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+            >删除</el-button>
             <el-button
               v-if="scope.row.is_end===0"
               v-permisaction="['process:list:upcoming:urge']"
@@ -88,7 +95,7 @@
 </template>
 
 <script>
-import { workOrderList, urgeWorkOrder, reopenWorkOrder } from '@/api/process/work-order'
+import { workOrderList, urgeWorkOrder, reopenWorkOrder, deleteWorkOrder } from '@/api/process/work-order'
 
 // 搜索
 import WorkOrderSearch from './components/search/index'
@@ -163,9 +170,29 @@ export default {
         })
       })
     },
+    handleDelete(row) {
+      this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteWorkOrder(row.id).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
     handleSelectionChange() {},
     handleUrge(row) {
-      this.$confirm('<span style="font-size:15px ">对此工单处理人进行催办通知提醒, 是否继续?</span><br><span style="color: #c33; font-size: 10px">注意：十分钟内只能催办一次。</span>', '催办', {
+      this.$confirm('<span style="font-size:15px ">对此工单处理人进行邮件催办通知提醒, 是否继续?</span><br><span style="color: #c33; font-size: 10px">注意：十分钟内只能催办一次。</span>', '催办', {
         dangerouslyUseHTMLString: true,
         confirmButtonText: '确定',
         cancelButtonText: '取消',
