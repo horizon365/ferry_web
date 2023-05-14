@@ -27,6 +27,15 @@ export function workOrderList(params) {
   })
 }
 
+// 保存更新工单
+export function saveWorkOrder(data) {
+  return request({
+    url: '/api/v1/work-order/save',
+    method: 'post',
+    data
+  })
+}
+
 // 处理工单
 export function handleWorkOrder(data) {
   return request({

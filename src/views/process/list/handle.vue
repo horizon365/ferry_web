@@ -114,6 +114,25 @@
               </el-button>
             </div>
             <div v-else>
+              <!--              <el-button-->
+              <!--                v-if="processStructureValue.workOrder.is_end===0"-->
+              <!--                v-permisaction="['process:list:upcoming:inversion']"-->
+              <!--                size="mini"-->
+              <!--                type="text"-->
+              <!--                icon="el-icon-position"-->
+              <!--                @click="handleInversion(scope.row)"-->
+              <!--              >转交&#45;&#45;&#45;&#45;</el-button>-->
+              <template v-for="(item, index) in processStructureValue.edges">
+                <el-button
+                  v-if="processStructureValue.workOrder.is_end===0 && item.source===currentNode.id && item.sort === '6'"
+                  :key="`${index}_jsa`"
+                  type="primary"
+                  @click="saveAction(item)"
+                >
+                  <!--                  <span style="color: red;">{{ item }}" </span>-->
+                  保存
+                </el-button>
+              </template>
               <template v-for="(item, index) in processStructureValue.edges">
                 <el-button
                   v-if="processStructureValue.workOrder.is_end===0 && item.source===currentNode.id"
@@ -177,7 +196,8 @@ Vue.component(GenerateForm.name, GenerateForm)
 import {
   processStructure,
   handleWorkOrder,
-  activeOrder
+  activeOrder,
+  saveWorkOrder
 } from '@/api/process/work-order'
 
 import { listUser } from '@/api/system/sysuser'
@@ -283,6 +303,53 @@ export default {
         }
         this.isLoadingStatus = false
         this.getAlertMessage()
+      })
+    },
+    saveAction(item) {
+      var promiseList = []
+      this.tpls = []
+      for (var tpl of this.processStructureValue.tpls) {
+        this.tpls.push({
+          tplDataId: tpl.id,
+          tplId: tpl.form_structure.id
+        })
+        promiseList.push(this.$refs['generateForm-' + tpl.id][0].getData())
+      }
+      Promise.all(promiseList).then(values => {
+        for (var tplDataIndex in this.tpls) {
+          this.tpls[tplDataIndex].tplValue = values[tplDataIndex]
+        }
+        saveWorkOrder({
+          tasks: this.processStructureValue.process.task,
+          source_state: this.processStructureValue.workOrder.current_state,
+          target_state: item.target,
+          circulation: item.label,
+          flow_properties: item.flowProperties === undefined ? 2 : parseInt(item.flowProperties),
+          work_order_id: parseInt(this.$route.query.workOrderId),
+          remarks: this.remarks,
+          is_exec_task: item.isExecuteTask,
+          tpls: this.tpls
+        }).then(response => {
+          if (response.code === 200) {
+            // this.$router.push({ name: 'upcoming' })
+            // window.location.reload()
+            this.getProcessNodeList()
+            this.msgSuccess('保存成功')
+          }
+        })
+      })
+    },
+    handleInversion(row) {
+      this.dialogVisible = true
+      this.ruleForm.work_order_id = row.id
+      this.nodeList = row.state
+      if (this.nodeList.length === 1) {
+        this.ruleForm.node_id = this.nodeList[0].id
+      }
+      listUser({
+        pageSize: 999999
+      }).then(response => {
+        this.users = response.data.list
       })
     },
     submitAction(item) {
