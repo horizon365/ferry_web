@@ -81,10 +81,10 @@
         <el-option label="非常紧急" :value="3" />
       </el-select>
     </el-form-item>
-    <el-form-item v-if="genre !== 'upcoming'" label="是否结束">
+    <el-form-item v-if="genre !== 'upcoming'" label="状态">
       <el-select v-model="listQuery.isEnd" placeholder="请选择状态" size="small" clearable style="width: 130px" @change="getList">
-        <el-option label="是" :value="1" />
-        <el-option label="否" :value="0" />
+        <el-option label="落实" :value="1" />
+        <el-option label="操作中" :value="0" />
       </el-select>
     </el-form-item>
     <el-form-item label="创建时间">

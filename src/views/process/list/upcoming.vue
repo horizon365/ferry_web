@@ -37,10 +37,10 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="是否结束" :show-overflow-tooltip="true" width="80" align="center">
+        <el-table-column label="状态" :show-overflow-tooltip="true" width="80" align="center">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.is_end===0" size="mini" type="success">否</el-tag>
-            <el-tag v-else size="mini" type="danger">是</el-tag>
+            <el-tag v-if="scope.row.is_end===0" size="mini" type="success">操作中</el-tag>
+            <el-tag v-else size="mini" type="danger">落实</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" align="center" prop="create_time" width="180">
